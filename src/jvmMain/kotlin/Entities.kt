@@ -3,11 +3,19 @@
  * - https://graphviz.org/doc/info/lang.html
  */
 
+// https://www.youtube.com/watch?v=SsoOG6ZeyUI
+private const val INDENT = "  "
+
 /**
  * Dot entity basic interface for serialization.
  */
 interface DotEntity {
-    fun dot(): String
+
+    /**
+     * I haven't decided what I like best.
+     * Passing the StringBuilder using the `with` pattern seems nice enough.
+     */
+    fun dot(sb: StringBuilder, indent: Int = 0)
 }
 
 /**
@@ -15,25 +23,104 @@ interface DotEntity {
  */
 abstract class DotGraph(private val name: String?) {
 
+    // Simple `graph` vs `digraph` for Dot generation
+    abstract val type: String
+
     /**
      * stmt_list: [ stmt [ ';' ] stmt_list ]
      */
-    private val stmts = mutableListOf<DotStmt>()
+    val stmts = mutableListOf<DotStmt>()
 
-    fun add(stmt: DotStmt) {
+    /**
+     * Prints the Dot code for this graph
+     */
+    fun dot(): String = with(StringBuilder()) {
+        if (name != null) appendLine("$type $name {") else appendLine("$type {")
+        stmts.forEach { stmt ->
+            stmt.dot(this, 1)
+            append("\n")
+        }
+        appendLine("}")
+    }.toString()
+
+    /**
+     * Node attribute statement
+     * - Dot: node [style=filled,color=white];
+     * - DSL: node {
+     *     style(filled)
+     *     color(white)
+     *   }
+     */
+    inline fun node(f: DotNodeAttrStmt.() -> Unit) {
+        val stmt = DotNodeAttrStmt(true)
+        stmt.f()
         stmts.add(stmt)
     }
+
+    /**
+     * Node statement is a simple "+" with an identifier.
+     * Attributes are optional with `attr`
+     */
+    operator fun String.unaryPlus(): DotNodeStmt {
+        val stmt = DotNodeStmt(DotNodeId(this))
+        stmts.add(stmt)
+        return stmt
+    }
+
+    /**
+     * Edge statement for undirected node id to node id
+     */
+    infix operator fun String.minus(target: String): DotEdgeStmt {
+        val lhs = DotNodeId(this)
+        val rhs = DotNodeId(target)
+        val stmt = DotEdgeStmt(DotEdge.NodeUnDirNode(lhs, rhs))
+        stmts.add(stmt)
+        return stmt
+    }
+
+    /**
+     * Edge statement for directed node id to node id
+     */
+    infix fun String.to(target: String): DotEdgeStmt {
+        val lhs = DotNodeId(this)
+        val rhs = DotNodeId(target)
+        val stmt = DotEdgeStmt(DotEdge.NodeDirNode(lhs, rhs))
+        stmts.add(stmt)
+        return stmt
+    }
+}
+
+/**
+ * graph { ... }
+ */
+fun graph(name: String? = null, f: DotUnDirGraph.() -> Unit): DotGraph {
+    val graph = DotUnDirGraph(name)
+    graph.f()
+    return graph
+}
+
+/**
+ * digraph { ... }
+ */
+fun digraph(name: String? = null, f: DotDirGraph.() -> Unit): DotGraph {
+    val graph = DotDirGraph(name)
+    graph.f()
+    return graph
 }
 
 /**
  * Undirected graph
  */
-class DotUnDirGraph(name: String?) : DotGraph(name)
+class DotUnDirGraph(name: String?) : DotGraph(name) {
+    override val type: String = "graph"
+}
 
 /**
  * Directed graph
  */
-class DotDirGraph(name: String?) : DotGraph(name)
+class DotDirGraph(name: String?) : DotGraph(name) {
+    override val type: String = "digraph"
+}
 
 /**
  * stmt: node_stmt
@@ -42,31 +129,55 @@ class DotDirGraph(name: String?) : DotGraph(name)
  * | ID '=' ID
  * | subgraph
  */
-abstract class DotStmt()
+abstract class DotStmt() : DotEntity
 
 /**
  * ID '=' ID
  */
-class DotIdStmt(val id: String, val value: String) : DotStmt()
+class DotIdStmt(private val id: String, private val value: String) : DotStmt() {
+    override fun dot(sb: StringBuilder, indent: Int): Unit = with(sb) {
+        append("$id = $value")
+    }
+}
 
 /**
  *  node_stmt: node_id [ attr_list ]
  */
-class DotNodeStmt(val nodeId: DotNodeId) : DotStmt() {
-    private var attributes = mutableListOf<DotNodeAttr<Any>>()
+class DotNodeStmt(private val nodeId: DotNodeId) : DotStmt() {
+
+    /**
+     * Attributes for this node
+     */
+    private val attrStmt = DotNodeAttrStmt()
+
+    /**
+     * Adds attributes to this node statement
+     */
+    infix fun attr(f: DotNodeAttrStmt.() -> Unit) {
+        attrStmt.f()
+    }
+
+    override fun dot(sb: StringBuilder, indent: Int): Unit = with(sb) {
+        append(nodeId.id)
+        attrStmt.dot(this, indent)
+    }
 }
 
 /**
  * Calling a DotVertex entities that can be the source or target of an edge -- i.e. node ids and subgraphs
  */
-interface DotVertex
+interface DotVertex : DotEntity
 
 /**
  * node_id: ID [ port ]
  *
  * TODO add port
  */
-class DotNodeId(val id: String) : DotVertex
+class DotNodeId(val id: String) : DotVertex {
+    override fun dot(sb: StringBuilder, indent: Int): Unit = with(sb) {
+        append(id)
+    }
+}
 
 /**
  * For now, I will only add two node connections per line because I can't figure it out right now.
@@ -83,9 +194,21 @@ class DotNodeId(val id: String) : DotVertex
  * edgeRHS   : edgeop (node_id | subgraph) [ edgeRHS ]
  *
  */
-class DotEdgeStmt : DotStmt() {
-    private val connections = mutableListOf<DotEdge>()
-    private val attributes = mutableListOf<DotEdgeAttr<Any>>()
+class DotEdgeStmt(private val edge: DotEdge) : DotStmt() {
+
+    /**
+     * Attributes for this edge
+     */
+    private val attrStmt = DotEdgeAttrStmt()
+
+    infix fun attr(f: DotEdgeAttrStmt.() -> Unit) {
+        attrStmt.f()
+    }
+
+    override fun dot(sb: StringBuilder, indent: Int): Unit = with(sb) {
+        edge.dot(sb, indent)
+        attrStmt.dot(sb, indent)
+    }
 }
 
 /**
@@ -109,10 +232,10 @@ enum class DotEdgeOp {
  * @constructor Create empty Dot connection
  */
 sealed class DotEdge(
-    val from: DotVertex,
-    val to: DotVertex,
-    val op: DotEdgeOp,
-) {
+    private val from: DotVertex,
+    private val to: DotVertex,
+    private val op: DotEdgeOp,
+) : DotEntity {
 
     class NodeUnDirNode(from: DotNodeId, to: DotNodeId) : DotEdge(from, to, DotEdgeOp.UNDIR)
 
@@ -129,58 +252,58 @@ sealed class DotEdge(
     class SubgraphUnDirNode(from: DotSubgraph, to: DotNodeId) : DotEdge(from, to, DotEdgeOp.UNDIR)
 
     class SubgraphDirNode(from: DotSubgraph, to: DotNodeId) : DotEdge(from, to, DotEdgeOp.DIR)
+
+    override fun dot(sb: StringBuilder, indent: Int): Unit = with(sb) {
+        from.dot(sb)
+        append(" $op ")
+        to.dot(sb)
+    }
 }
 
 /**
  * attr_stmt: (graph | node | edge) attr_list
  */
-sealed class DotAttrStmt<T : DotAttr<Any>>() : DotStmt() {
-    private val attrList = mutableListOf<T>()
+sealed class DotAttrStmt : DotStmt() {
 
-    fun add(attr: T) {
-        attrList.add(attr)
+    // Tells us if this attribute statment on its own, or attached to an indentifier
+    abstract val type: String
+    abstract val standalone: Boolean
+    val attrs = mutableListOf<DotAttr<*>>()
+
+    override fun dot(sb: StringBuilder, indent: Int): Unit = with(sb) {
+        if (standalone) append("$type[") else append("[")
+        append(attrs.joinToString(",") { attr -> "${attr.name}=${attr.value}" })
+        append("]")
     }
 }
 
 /**
  * Graph specific attribute statement
  */
-class DotGraphAttrStmt() : DotAttrStmt<DotGraphAttr<Any>>()
+class DotGraphAttrStmt(override val standalone: Boolean = false) : DotAttrStmt() {
+    override val type = "graph"
+}
 
 /**
- * Node specific attribute statement
+ * Node specific attribute statement.
+ * All functions are node attributes.
  */
-class DotNodeAttrStmt() : DotAttrStmt<DotNodeAttr<Any>>()
+class DotNodeAttrStmt(override val standalone: Boolean = false) : DotAttrStmt() {
+
+    override val type = "node"
+
+    fun color(v: String) = attrs.add(DotAttrColor(v))
+}
 
 /**
  * Edge specific attribute statement
  */
-class DotEdgeAttrStmt() : DotAttrStmt<DotEdgeAttr<Any>>()
+class DotEdgeAttrStmt(override val standalone: Boolean = false) : DotAttrStmt() {
 
-/**
- * Dot attributes. http://www.graphviz.org/doc/info/attrs.html
- * Interfaces for each subtype allows for multiple inheritance.
- */
-interface DotAttr<T> {
-    val name: String
-    val value: T?
-    val default: T
+    override val type = "edge"
+
+    fun color(v: String) = attrs.add(DotAttrColor(v))
 }
-
-/**
- * Graph attributes
- */
-interface DotGraphAttr<T> : DotAttr<T>
-
-/**
- * Node attributes
- */
-interface DotNodeAttr<T> : DotAttr<T>
-
-/**
- * Edge attributes
- */
-interface DotEdgeAttr<T> : DotAttr<T>
 
 /**
  * Could probably be the same as the graph, but I like this extra inheritance control
@@ -192,8 +315,7 @@ class DotSubgraph(val name: String?) : DotVertex {
      * stmt_list: [ stmt [ ';' ] stmt_list ]
      */
     private val stmts = mutableListOf<DotStmt>()
-
-    fun add(stmt: DotStmt) {
-        stmts.add(stmt)
+    override fun dot(sb: StringBuilder, indent: Int) {
+        TODO("Not yet implemented")
     }
 }
