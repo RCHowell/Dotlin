@@ -84,7 +84,7 @@ fun main() {
             "b2" - "b3"
             color = "blue"
             label = "process #2"
-        }
+        } - "a0"
 
         "start" - "a0"
         "start" - "b0"
@@ -102,8 +102,20 @@ fun main() {
         }
     }
 
+    // TODO fix subgraph to node connections
+    // node to subgraph works
+    var g4 = digraph {
+        subgraph {
+            node {
+                color = "blue"
+            }
+            -"x"
+            -"y"
+        } - "a"
+    }
     //    println(graph.dot())
     //    print("\n\n\n")
     //    println(g2.dot())
-    println(g3.dot())
+//    println(g3.dot())
+    println(g4.dot())
 }
