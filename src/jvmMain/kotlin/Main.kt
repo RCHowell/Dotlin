@@ -8,7 +8,7 @@ fun main() {
 
         center = true
 
-        -"a" + {
+        +"a" + {
             color = "blue"
         }
 
@@ -20,7 +20,7 @@ fun main() {
             color = "black"
         }
 
-        subgraph {
+        +subgraph {
             node {
                 color = "yellow"
             }
@@ -30,7 +30,7 @@ fun main() {
 
     val g2 = digraph("g") {
         node {
-            shape = "plaintext"
+            shape = DotNodeShape.PLAINTEXT
             color = "blue"
         }
         "A1" - "B1"
@@ -42,27 +42,28 @@ fun main() {
         "B2" - "B3" + { label = "g'" }
         "B1" - "B3" + {
             label = "(g o f)'"
-            tailport = "s"
-            headport = "s"
+            tailport = DotPortPos.S
+            headport = DotPortPos.S
         }
 
-        subgraph {
+        +subgraph {
             rank = "same"
-            -"A1"
-            -"A2"
-            -"A3"
+            +"A1"
+            +"A2"
+            +"A3"
         }
-        subgraph {
+
+        +subgraph {
             rank = "same"
-            -"B1"
-            -"B2"
-            -"B3"
+            +"B1"
+            +"B2"
+            +"B3"
         }
     }
 
     val g3 = digraph("G") {
 
-        subgraph("cluster_0") {
+        +subgraph("cluster_0") {
             node {
                 style = "filled"
                 color = "white"
@@ -70,12 +71,12 @@ fun main() {
                 "a1" - "a2"
                 "a2" - "a3"
             }
-            style = "filled"
+            style = DotSubgraphStyle.FILLED
             color = "lightgrey"
             label = "process #1"
         }
 
-        subgraph("cluster_1") {
+        +subgraph("cluster_1") {
             node {
                 style = "filled"
             }
@@ -84,7 +85,7 @@ fun main() {
             "b2" - "b3"
             color = "blue"
             label = "process #2"
-        } - "a0"
+        }
 
         "start" - "a0"
         "start" - "b0"
@@ -94,28 +95,36 @@ fun main() {
         "a3" - "end"
         "b3" - "end"
 
-        -"start" + {
-            shape = "Mdiamond"
+        +"start" + {
+            shape = DotNodeShape.DIAMOND
         }
-        -"end" + {
-            shape = "Msquare"
+        +"end" + {
+            shape = DotNodeShape.MSQUARE
         }
     }
 
-    // TODO fix subgraph to node connections
-    // node to subgraph works
-    var g4 = digraph {
+    val g4 = digraph {
+
+        center = true
+
         subgraph {
             node {
                 color = "blue"
             }
-            -"x"
-            -"y"
+            +"x"
+            +"y"
         } - "a"
+
+        "b" - subgraph {
+            +"w"
+            +"x"
+        }
+
+        "a" - "b"
     }
-    //    println(graph.dot())
-    //    print("\n\n\n")
-    //    println(g2.dot())
-//    println(g3.dot())
-    println(g4.dot())
+    println(g1.dot())
+    print("\n\n\n")
+    println(g2.dot())
+    print("\n\n\n")
+    println(g3.dot())
 }

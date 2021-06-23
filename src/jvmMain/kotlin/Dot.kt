@@ -8,7 +8,7 @@ import kotlin.properties.ObservableProperty
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-const val INDENT = "  "
+const val INDENT = "\t"
 
 /**
  * graph { ... }
@@ -62,16 +62,21 @@ sealed class DotGraph(
     inline fun subgraph(name: String? = null, f: DotSubgraph.() -> Unit): DotSubgraph {
         val stmt = DotSubgraph(name, edgeOp)
         stmt.f()
-        stmts.add(stmt)
         return stmt
     }
 
     /**
-     * Node statement is a "-" with an identifier string.
-     * Motivation for this is unordered markdown lists using "-"
-     * Attributes are optional with `+`
+     * Adding a subgraph to the root graph requires "+" just like nodes
      */
-    operator fun String.unaryMinus(): DotNodeStmt {
+    operator fun DotSubgraph.unaryPlus() {
+        this@DotGraph.stmts.add(this)
+    }
+
+    /**
+     * Node statement is a "+" with an identifier string.
+     * This aligns with the HTML Kotlin DSL
+     */
+    operator fun String.unaryPlus(): DotNodeStmt {
         val stmt = DotNodeStmt(DotNodeId(this))
         stmts.add(stmt)
         return stmt
@@ -105,7 +110,7 @@ sealed class DotGraph(
             DotEdgeOp.DIR -> DotEdgeStmt(DotEdge.NodeDirSubgraph(lhs, target))
             DotEdgeOp.UNDIR -> DotEdgeStmt(DotEdge.NodeUnDirSubgraph(lhs, target))
         }
-        stmts.add(stmt)
+        this@DotGraph.stmts.add(stmt)
         return stmt
     }
 
@@ -118,7 +123,7 @@ sealed class DotGraph(
             DotEdgeOp.DIR -> DotEdgeStmt(DotEdge.SubgraphDirNode(this, rhs))
             DotEdgeOp.UNDIR -> DotEdgeStmt(DotEdge.SubgraphUnDirNode(this, rhs))
         }
-        stmts.add(stmt)
+        this@DotGraph.stmts.add(stmt)
         return stmt
     }
 
@@ -130,7 +135,7 @@ sealed class DotGraph(
             DotEdgeOp.DIR -> DotEdgeStmt(DotEdge.SubgraphDirSubgraph(this, target))
             DotEdgeOp.UNDIR -> DotEdgeStmt(DotEdge.SubgraphUnDirSubgraph(this, target))
         }
-        stmts.add(stmt)
+        this@DotGraph.stmts.add(stmt)
         return stmt
     }
 }
@@ -141,11 +146,227 @@ class DotRootGraph(
     edgeOp: DotEdgeOp
 ) : DotGraph(name, strict, edgeOp) {
 
+    var background: String? by attr("_background")
+
+    var bb: DotRect? by attr()
+
+    var bgcolor: String? by attr()
+
     var center: Boolean? by attr()
+
+    var charset: String? by attr()
+
+    var clazz: String? by attr("class")
+
+    var clusterrank: DotClusterMode? by attr()
+
+    var colorscheme: String? by attr()
+
+    var comment: String? by attr()
+
+    var compound: Boolean? by attr()
+
+    var concentrate: Boolean? by attr()
+
+    var damping: Double? by attr("Damping")
+
+    var defaultdist: Double? by attr()
+
+    var dim: Int? by attr()
+
+    var dimen: Int? by attr()
+
+    var diredgecontraintsS: String? by attr("diredgeconstraints")
+
+    var diredgeconstraintsB: Boolean? by attr("diredgeconstraints")
+
+    var dpi: Double? by attr()
+
+    var epsilon: Double? by attr()
+
+    var esep: Double? by attr()
+
+    var fontcolor: String? by attr()
+
+    var fontname: String? by attr()
+
+    var fontnames: String? by attr()
+
+    var fontpath: String? by attr()
+
+    var fontsize: Double? by attr()
+
+    var forcelabels: Boolean? by attr()
+
+    var gradientangle: Int? by attr()
+
+    var href: String? by attr()
+
+    var id: String? by attr()
+
+    var imagepath: String? by attr()
+
+    var inputscale: Double? by attr()
+
+    var k: Double? by attr("K")
+
+    var labelscheme: Int? by attr("label_scheme")
+
+    var labeljust: String? by attr()
+
+    var labelloc: String? by attr()
+
+    var landscape: Boolean? by attr()
+
+    var layerlistsep: String? by attr()
+
+    var layers: String? by attr()
+
+    var layout: String? by attr()
+
+    var levels: Int? by attr()
+
+    var levelsgap: Double? by attr()
+
+    var lheight: Double? by attr()
+
+    var lp2: Pair<Double, Double>? by attr("lp")
+
+    var lp3: Triple<Double, Double, Double>? by attr("lp")
+
+    var lwidth: Double? by attr()
+
+    var margin: Double? by attr()
+
+    var marginP: Pair<Double, Double>? by attr("margin")
+
+    var marginP3: Triple<Double, Double, Double>? by attr("margin")
+
+    var maxiter: Int? by attr()
+
+    var mclimit: Double? by attr()
+
+    var mindist: Double? by attr()
+
+    var mode: String? by attr()
+
+    var model: String? by attr()
+
+    var mosek: Boolean? by attr()
+
+    var newrank: Boolean? by attr()
+
+    var nodesep: Double? by attr()
+
+    var normalizeB: Boolean? by attr("normalize")
+
+    var normalizeD: Double? by attr("normalize")
+
+    var notranslate: Boolean? by attr()
+
+    var nslimit: Double? by attr()
+
+    var nslimit1: Double? by attr()
+
+    var ordering: String? by attr()
+
+    var orientationB: Boolean? by attr("orientation")
+
+    var orientationS: String? by attr("orientation")
+
+    var outputorder: DotOutputMode? by attr()
+
+    var overlapS: String? by attr("overlap")
+
+    var overlapB: Boolean? by attr("overlap")
+
+    var overlapScaling: Double? by attr("overlap_scaling")
+
+    var overlapShrink: Boolean? by attr("overlap_shrink")
+
+    var packB: Boolean? by attr("pack")
+
+    var packI: Int? by attr("pack")
+
+    var packmode: String? by attr()
+
+    var pad: Double? by attr()
+
+    var page: Double? by attr()
+
+    var pagdir: DotPageDir? by attr()
+
+    var quadtree: DotQuadType? by attr()
+
+    var quantum: Double? by attr()
+
+    var rankdir: DotRankDir? by attr()
+
+    var ranksep: Double? by attr()
+
+    var ratio: Double? by attr()
 
     var ratioS: String? by attr("ratio")
 
     var ratioD: Double? by attr("ratio")
+
+    var remincross: Boolean? by attr()
+
+    var repulsiveforce: Double? by attr()
+
+    var resolution: Double? by attr()
+
+    var rootS: String? by attr("root")
+
+    var rootB: Boolean? by attr("root")
+
+    var rotate: Int? by attr()
+
+    var rotation: Double? by attr()
+
+    var scale: Double? by attr()
+
+    var scaleP2: Pair<Double, Double>? by attr("scale")
+
+    var scaleP3: Triple<Double, Double, Double>? by attr("scale")
+
+    var searchsize: Int? by attr()
+
+    var sep: Double? by attr()
+
+    var sepP: Pair<Double, Double>? by attr("sep")
+
+    var showboxes: Int? by attr()
+
+    var size: Double? by attr()
+
+    var sizeP2: Pair<Double, Double>? by attr("size")
+
+    var sizeP3: Triple<Double, Double, Double>? by attr("size")
+
+    var smoothing: DotSmoothType? by attr()
+
+    var sortv: Int? by attr()
+
+    var splines: Boolean? by attr()
+
+    var splinesS: String? by attr("splines")
+
+    var start: String? by attr()
+
+    var stylesheet: String? by attr()
+
+    var target: String? by attr()
+
+    var truecolor: Boolean? by attr()
+
+    var url: String? by attr("URL")
+
+    var viewport: String? by attr()
+
+    var voroMargin: Double? by attr("voro_margin")
+
+    var xdotversion: String? by attr()
 
     /**
      * Returns the Dot code for this graph
@@ -155,7 +376,11 @@ class DotRootGraph(
         if (edgeOp == DotEdgeOp.UNDIR) append("graph ") else append("digraph ")
         if (name != null) append("$name ")
         appendLine("{")
-        if (attrs.isNotEmpty()) appendLine(attrs.dot(0, "\n"))
+        if (attrs.isNotEmpty()) {
+            appendLine("$INDENT// Attributes")
+            appendLine(attrs.dot(1, "\n"))
+            appendLine("$INDENT// Statements")
+        }
         stmts.forEach { stmt ->
             stmt.dot(this, 1)
             append("\n")
@@ -170,28 +395,55 @@ class DotRootGraph(
  */
 class DotSubgraph(name: String?, edgeOp: DotEdgeOp) : DotGraph(name, false, edgeOp), DotVertex, DotStmt {
 
-    var rank: String? by attr()
+    var area: Double? by attr()
 
-    var style: String? by attr()
+    var bgcolor: String? by attr()
+
+    var clazz: String? by attr()
+
+    var colorscheme: String? by attr()
+
+    var fillcolor: String? by attr()
+
+    var layer: String? by attr()
+
+    var peripheries: String? by attr()
+
+    var tooltip: String? by attr()
+
+    var rank: String? by attr()
 
     var color: String? by attr()
 
+    var style: DotSubgraphStyle? by attr()
+
     var label: String? by attr()
 
-    override fun dot(sb: StringBuilder, indent: Int): Unit = with(sb) {
-        append(INDENT.repeat(indent))
+    override fun dot(sb: StringBuilder, indent: Int, leadingWhitespace: Boolean): Unit = with(sb) {
+        val prefix = INDENT.repeat(indent)
+        val prefix1 = prefix + INDENT
+        if (leadingWhitespace) append(prefix)
         if (name != null) appendLine("subgraph $name {") else appendLine("subgraph {")
-        if (attrs.isNotEmpty()) appendLine(attrs.dot(indent, "\n"))
+        if (attrs.isNotEmpty()) {
+            appendLine("$prefix1// Attributes")
+            appendLine(attrs.dot(indent + 1, "\n"))
+            appendLine("$prefix1// Statements")
+        }
         stmts.forEach { stmt ->
             stmt.dot(this, indent + 1)
             append("\n")
         }
         append(INDENT.repeat(indent)).append("}")
     }
+
+    /**
+     * Subgraph can also be an entity. Same code but with leading whitespace.
+     */
+    override fun dot(sb: StringBuilder, indent: Int) = dot(sb, indent, true)
 }
 
 /**
- * Interface for code gen.
+ * Interface for Dot generating
  */
 interface DotEntity {
 
@@ -199,6 +451,15 @@ interface DotEntity {
      * Entity adds its Dot code to the StringBuilder
      */
     fun dot(sb: StringBuilder, indent: Int = 0)
+}
+
+/**
+ * Calling a DotVertex entities that can be the source or target of an edge -- i.e. node ids and subgraphs
+ * This affects indentation in Dot generating.
+ */
+interface DotVertex {
+
+    fun dot(sb: StringBuilder, indent: Int, leadingWhitespace: Boolean = false)
 }
 
 /**
@@ -233,15 +494,10 @@ class DotNodeStmt(private val nodeId: DotNodeId) : DotStmt {
 }
 
 /**
- * Calling a DotVertex entities that can be the source or target of an edge -- i.e. node ids and subgraphs
- */
-interface DotVertex : DotEntity
-
-/**
  * node_id: ID [ port ]
  */
 class DotNodeId(val id: String, private val port: DotPortPos? = null) : DotVertex {
-    override fun dot(sb: StringBuilder, indent: Int): Unit = with(sb) {
+    override fun dot(sb: StringBuilder, indent: Int, leadingWhitespace: Boolean): Unit = with(sb) {
         if (port == null) {
             append(id)
         } else {
@@ -317,9 +573,9 @@ sealed class DotEdge(
     class SubgraphDirNode(from: DotSubgraph, to: DotNodeId) : DotEdge(from, to, DotEdgeOp.DIR)
 
     override fun dot(sb: StringBuilder, indent: Int): Unit = with(sb) {
-        from.dot(this)
+        from.dot(this, indent)
         append(" $op ")
-        to.dot(this)
+        to.dot(this, indent)
     }
 }
 
@@ -330,7 +586,9 @@ fun MutableMap<String, Any>.dot(indent: Int = 0, separator: String = ","): Strin
     val prefix = INDENT.repeat(indent)
     return this@dot.map { (k, v) ->
         val valueString = when (v) {
-            is String -> "\"$v\""
+            is String -> "\"$v\"" // strings are always quoted. Might be problematic for escString type such as HTML
+            is Pair<*, *> -> "\"${v.first},${v.second}\""
+            is Triple<*, *, *> -> "\"${v.first},${v.second},${v.third}\""
             else -> v.toString()
         }
         "$prefix$k=$valueString"
@@ -376,7 +634,6 @@ sealed class DotAttrStmt : DotStmt, DotAttrCapture() {
             append(
                 when (this@DotAttrStmt) {
                     is DotNodeAttrStmt -> "node"
-                    is DotGraphAttrStmt -> "graph"
                     is DotEdgeAttrStmt -> "edge"
                 }
             )
@@ -391,28 +648,118 @@ sealed class DotAttrStmt : DotStmt, DotAttrCapture() {
 }
 
 /**
- * Graph specific attribute statement
- */
-class DotGraphAttrStmt(override val standalone: Boolean = false) : DotAttrStmt() {
-
-    var color: String? by attr()
-
-    var style: String? by attr()
-}
-
-/**
  * Node specific attribute statement.
  * All functions are node attributes.
  */
 class DotNodeAttrStmt(override val standalone: Boolean = false) : DotAttrStmt() {
 
+    var area: Double? by attr()
+
+    var clazz: String? by attr("class")
+
     var color: String? by attr()
 
-    var label: String? by attr()
+    var colorscheme: String? by attr()
 
-    var shape: String? by attr()
+    var comment: String? by attr()
+
+    var distortion: Double? by attr()
+
+    var fillcolor: String? by attr()
+
+    var fixedsize: Boolean? by attr()
+
+    var fixedsizeS: String? by attr("fixedsize")
+
+    var fontcolor: String? by attr()
+
+    var fontname: String? by attr()
+
+    var gradientangle: Int? by attr()
+
+    var group: String? by attr()
+
+    var height: Double? by attr()
+
+    var href: Double? by attr()
+
+    var id: String? by attr()
+
+    var image: String? by attr()
+
+    var imagepos: String? by attr()
+
+    var imagescale: Boolean? by attr()
+
+    var imagescaleS: String? by attr("imagescale")
+
+    var labelloc: String? by attr()
+
+    var layer: String? by attr()
+
+    var margin: Double? by attr()
+
+    var marginP2: Pair<Double, Double>? by attr("margin")
+
+    var marginP3: Triple<Double, Double, Double>? by attr("margin")
+
+    var ordering: String? by attr()
+
+    var orientationB: Boolean? by attr("orientation")
+
+    var orientationS: String? by attr("orientation")
+
+    var penwidth: Double? by attr()
+
+    var peripheries: Int? by attr()
+
+    var pin: Boolean? by attr()
+
+    var pos2: Pair<Double, Double>? by attr("pos")
+
+    var pos3: Triple<Double, Double, Double>? by attr("pos")
+
+    var rects: DotRect? by attr()
+
+    var regular: Boolean? by attr()
+
+    var rootS: String? by attr("root")
+
+    var rootB: Boolean? by attr("root")
+
+    var samplepoints: Int? by attr()
+
+    var shape: DotNodeShape? by attr()
+
+    var shapefile: String? by attr()
+
+    var showboxes: Int? by attr()
+
+    var sides: Int? by attr()
+
+    var skew: Double? by attr()
+
+    var sortv: Int? by attr()
 
     var style: String? by attr()
+
+    var target: String? by attr()
+
+    var tooltip: String? by attr()
+
+    var url: String? by attr("URl")
+
+    var vertices: String? by attr()
+
+    var width: Double? by attr()
+
+    var xlabel: String? by attr()
+
+    var xlp2: Pair<Double, Double>? by attr("xlp")
+
+    var xlp3: Triple<Double, Double, Double>? by attr("xlp")
+
+    var z: Double? by attr()
 }
 
 /**
@@ -466,7 +813,7 @@ class DotEdgeAttrStmt(override val standalone: Boolean = false) : DotAttrStmt() 
 
     var headlabel: String? by attr()
 
-    var headPort: DotPortPos? by attr()
+    var headport: DotPortPos? by attr()
 
     var headtarget: String? by attr()
 
@@ -490,9 +837,77 @@ class DotEdgeAttrStmt(override val standalone: Boolean = false) : DotAttrStmt() 
 
     var labelfontname: String? by attr()
 
-    var tailport: String? by attr()
+    var labelfontsize: Double? by attr()
 
-    var headport: String? by attr()
+    var labelhref: String? by attr()
+
+    var labeltarget: String? by attr()
+
+    var labeltooltip: String? by attr()
+
+    var labelURL: String? by attr()
+
+    var layer: String? by attr()
+
+    var len: Double? by attr()
+
+    var lhead: String? by attr()
+
+    var lp2: Pair<Double, Double>? by attr("lp")
+
+    var lp3: Triple<Double, Double, Double>? by attr("lp")
+
+    var ltail: String? by attr()
+
+    var minlen: Int? by attr()
+
+    var nojustify: Boolean? by attr()
+
+    var penwidth: Double? by attr()
+
+    var pos2: Pair<Double, Double>? by attr("pos")
+
+    var pos3: Triple<Double, Double, Double>? by attr("pos")
+
+    var samehead: String? by attr()
+
+    var sametail: String? by attr()
+
+    var showboxes: Int? by attr()
+
+    var style: DotEdgeStyle? by attr()
+
+    var taillp2: Pair<Double, Double>? by attr("tail_lp")
+
+    var taillp3: Triple<Double, Double, Double>? by attr("tail_lp")
+
+    var tailclip: Boolean? by attr()
+
+    var tailhref: String? by attr()
+
+    var taillabel: String? by attr()
+
+    var tailport: DotPortPos? by attr()
+
+    var tailtarget: String? by attr()
+
+    var tailtooltip: String? by attr()
+
+    var tailURL: String? by attr()
+
+    var target: String? by attr()
+
+    var tooltip: String? by attr()
+
+    var url: String? by attr("URL")
+
+    var weight: Double? by attr()
+
+    var xlabel: String? by attr()
+
+    var xlp2: Pair<Double, Double>? by attr("xlp")
+
+    var xlp3: Triple<Double, Double, Double>? by attr("xlp")
 }
 
 enum class DotArrowType {
@@ -542,4 +957,165 @@ enum class DotPortPos {
         DEF -> "_"
         else -> super.toString().toLowerCase()
     }
+}
+
+enum class DotEdgeStyle {
+    DASHED,
+    DOTTED,
+    SOLID,
+    INVIS,
+    BOLD,
+    TAPERED;
+
+    override fun toString(): String = super.toString().toLowerCase()
+}
+
+enum class DotNodeStyle {
+    DASHED,
+    DOTTED,
+    SOLID,
+    INVIS,
+    BOLD,
+    FILLED,
+    STRIPED,
+    WEDGED,
+    DIAGONALS,
+    ROUNDED;
+
+    override fun toString(): String = super.toString().toLowerCase()
+}
+
+class DotRect(
+    val llx: Double,
+    val lly: Double,
+    val urx: Double,
+    val ury: Double
+) {
+    override fun toString(): String = "$llx,$lly,$urx,$ury"
+}
+
+enum class DotClusterMode {
+    LOCAL,
+    GLOBAL,
+    NONE;
+
+    override fun toString(): String = super.toString().toLowerCase()
+}
+
+enum class DotOutputMode {
+    BREADTHFIRST,
+    NODESFIRST,
+    EDGESFIRST;
+
+    override fun toString(): String = super.toString().toLowerCase()
+}
+
+enum class DotPageDir {
+    BL,
+    BR,
+    TL,
+    TR,
+    RB,
+    RT,
+    LB,
+    LT
+}
+
+enum class DotQuadType {
+    NORMAL,
+    FAST,
+    NONE;
+
+    override fun toString(): String = super.toString().toLowerCase()
+}
+
+enum class DotRankDir {
+    TB,
+    LR,
+    BT,
+    RL
+}
+
+enum class DotSmoothType {
+    NONE,
+    AVG_DIST,
+    GRAPH_DIST,
+    POWER_DIST,
+    RNG,
+    SPRING,
+    TRIANGLE;
+
+    override fun toString(): String = super.toString().toLowerCase()
+}
+
+enum class DotNodeShape {
+    BOX,
+    POLYGON,
+    ELLIPSE,
+    OVAL,
+    CIRCLE,
+    POINT,
+    EGG,
+    TRIANGLE,
+    PLAINTEXT,
+    PLAIN,
+    DIAMOND,
+    TRAPEZIUM,
+    PARALLELOGRAM,
+    HOUSE,
+    PENTAGON,
+    HEXAGON,
+    SEPTAGON,
+    OCTAGON,
+    DOUBLECIRCLE,
+    DOUBLEOCTAGON,
+    TRIPLEOCTAGON,
+    INVTRIANGLE,
+    INVTRAPEZIUM,
+    INVHOUSE,
+    MDIAMOND,
+    MSQUARE,
+    MCIRCLE,
+    RECT,
+    RECTANGLE,
+    SQUARE,
+    STAR,
+    NONE,
+    UNDERLINE,
+    CYCLINDER,
+    NOTE,
+    TAB,
+    FOLDER,
+    BOX3D,
+    COMPONENT,
+    PROMOTER,
+    CDS,
+    TERMINATOR,
+    UTR,
+    PRIMERSITE,
+    RESTRICTIONSITE,
+    FIVEPOVERHANG,
+    THREEPOVERHANG,
+    NOVERHANG,
+    ASSEMBLY,
+    SIGNATURE,
+    INSULATOR,
+    RIBOSITE,
+    RNASTAB,
+    PROTEASESITE,
+    PROTEINSTAB,
+    RPROMOTER,
+    RARROW,
+    LARROW,
+    LPROMOTER;
+
+    override fun toString(): String = super.toString().toLowerCase()
+}
+
+enum class DotSubgraphStyle {
+    FILLED,
+    STRIPED,
+    ROUNDED;
+
+    override fun toString(): String = super.toString().toLowerCase()
 }
