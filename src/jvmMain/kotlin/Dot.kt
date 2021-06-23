@@ -587,8 +587,8 @@ fun MutableMap<String, Any>.dot(indent: Int = 0, separator: String = ","): Strin
     return this@dot.map { (k, v) ->
         val valueString = when (v) {
             is String -> "\"$v\"" // strings are always quoted. Might be problematic for escString type such as HTML
-            is Pair<*, *> -> "\"${v.first},${v.second}\""
-            is Triple<*, *, *> -> "\"${v.first},${v.second},${v.third}\""
+            is Pair<*, *> -> "\"${v.first},${v.second}!\""
+            is Triple<*, *, *> -> "\"${v.first},${v.second},${v.third}!\""
             else -> v.toString()
         }
         "$prefix$k=$valueString"

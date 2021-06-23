@@ -4,9 +4,8 @@ fun main() {
 
         node {
             color = "green"
+            shape = DotNodeShape.BOX3D
         }
-
-        center = true
 
         +"a" + {
             color = "blue"
@@ -18,6 +17,7 @@ fun main() {
 
         "a" - "c" + {
             color = "black"
+            style = DotEdgeStyle.DASHED
         }
 
         +subgraph {
@@ -31,7 +31,6 @@ fun main() {
     val g2 = digraph("g") {
         node {
             shape = DotNodeShape.PLAINTEXT
-            color = "blue"
         }
         "A1" - "B1"
         "A2" - "B2"
@@ -103,28 +102,20 @@ fun main() {
         }
     }
 
-    val g4 = digraph {
-
-        center = true
-
-        subgraph {
-            node {
-                color = "blue"
-            }
-            +"x"
-            +"y"
-        } - "a"
-
-        "b" - subgraph {
-            +"w"
-            +"x"
-        }
-
+    val g4 = graph {
         "a" - "b"
+        "a" - "c"
+        "a" - "d"
+        "b" - "a"
+        "b" - "d"
+        "c" - "a"
+        "c" - "d"
     }
-    println(g1.dot())
-    print("\n\n\n")
-    println(g2.dot())
-    print("\n\n\n")
-    println(g3.dot())
+
+    //    println(g1.dot())
+    //    print("\n\n\n")
+    //    println(g2.dot())
+    //    print("\n\n\n")
+    //    println(g3.dot())
+    println(g4.dot())
 }
