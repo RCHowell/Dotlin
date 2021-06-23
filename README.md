@@ -1,7 +1,5 @@
 # Dotlin - Kotlin Graphviz Dot DSL
 
----
-
 ## About
 
 This library is a Kotlin DSL for the Graphviz Dot language. Its syntax is fairly similar to standard Dot, with some
