@@ -5,7 +5,7 @@
 This library is a Kotlin DSL for the Graphviz Dot language. Its syntax is fairly similar to standard Dot, with some
 tweaks to get it to work as a Kotlin DSL. The library can be useful to generate graphs.
 
-```
+```kotlin
 digraph {
 
     // Normal Kotlin statements
@@ -26,7 +26,7 @@ digraph {
 ```
 
 ## Puzzle
-```
+```kotlin
 graph {
     "a" - "b"
     "a" - "c"
@@ -42,7 +42,7 @@ graph {
 
 ### Dot
 
-```
+```kotlin
 digraph g {
 	node [shape=plaintext];
 	A1 -> B1;
@@ -61,7 +61,7 @@ digraph g {
 
 ### Dotlin
 
-```
+```kotlin
 digraph("g") {
 
     // Global node attributes
@@ -102,7 +102,7 @@ digraph("g") {
 
 ### Basics
 
-```
+```kotlin
 // This produces the Dreampuf default graph
 // https://dreampuf.github.io/GraphvizOnline 
 
@@ -161,7 +161,7 @@ See https://graphviz.org/doc/info/attrs.html
 
 ### Graphs
 
-```
+```kotlin
 graph { ... }
 
 digraph { ... }
@@ -175,7 +175,7 @@ digraph("name") { ... }
 
 Add nodes in graphs using the `+` unary operator like the Kotlin HTML DSL.
 
-```
+```kotlin
 graph {
    // basic nodes
    +"a"
@@ -193,7 +193,7 @@ graph {
 You can add edges between nodes using the binary infix `-`. You can add edges between nodes and subgraphs. The graph
 type -- graph vs digraph -- determines the edge type. In Dotlin, you just use `-` not "--" and "->".
 
-```
+```kotlin
 graph {
     // Nodes with attributes
     +"a" + { color = "blue" }
@@ -214,7 +214,7 @@ digraph {
 
 ## Subgraphs
 Add subgraphs with `+subgraph { ... }` and the code within the subgraph block is the same as for a graph/digraph block.
-```
+```kotlin
 graph {
 
     // Add subgraph to graph
@@ -250,13 +250,13 @@ stmt            : node_stmt
                   | 	subgraph
 attr_stmt 	: 	(graph | node | edge) attr_list
 attr_list 	: 	'[' [ a_list ] ']' [ attr_list ]
-a_list 	: 	ID '=' ID [ (';' | ',') ] [ a_list ]
+a_list 		: 	ID '=' ID [ (';' | ',') ] [ a_list ]
 edge_stmt 	: 	(node_id | subgraph) edgeRHS [ attr_list ]
 edgeRHS 	: 	edgeop (node_id | subgraph) [ edgeRHS ]
 node_stmt 	: 	node_id [ attr_list ]
 node_id 	: 	ID [ port ]
 port            : ':' ID [ ':' compass_pt ]
-	            | 	':' compass_pt
+	          | ':' compass_pt
 subgraph 	: 	[ subgraph [ ID ] ] '{' stmt_list '}'
 compass_pt 	: 	(n | ne | e | se | s | sw | w | nw | c | _)
 ```
