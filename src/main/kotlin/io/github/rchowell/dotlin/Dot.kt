@@ -1,8 +1,17 @@
-/**
- * R. C. Howell 2021
- * - https://www.graphviz.org/pdf/dotguide.pdf
- * - https://graphviz.org/doc/info/lang.html
- */
+/*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+package io.github.rchowell.dotlin
 
 import kotlin.properties.ObservableProperty
 import kotlin.properties.ReadWriteProperty
@@ -84,7 +93,7 @@ sealed class DotGraph(
 
     /**
      * I couldn't figure out how to chain edges while also attaching edge attributes
-     *  hence why these return a DotEdgeStmt and not the rhs
+     *  hence why these return a io.github.rchowell.dotlin.DotEdgeStmt and not the rhs
      */
 
     /**
@@ -454,7 +463,7 @@ interface DotEntity {
 }
 
 /**
- * Calling a DotVertex entities that can be the source or target of an edge -- i.e. node ids and subgraphs
+ * Calling a io.github.rchowell.dotlin.DotVertex entities that can be the source or target of an edge -- i.e. node ids and subgraphs
  * This affects indentation in Dot generating.
  */
 interface DotVertex {
@@ -931,14 +940,14 @@ enum class DotArrowType {
     OBOX,
     HALFOPEN;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }
 
 enum class DotDirType {
     FORWARD,
     NONE;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }
 
 enum class DotPortPos {
@@ -955,7 +964,7 @@ enum class DotPortPos {
 
     override fun toString(): String = when (this) {
         DEF -> "_"
-        else -> super.toString().toLowerCase()
+        else -> super.toString().lowercase()
     }
 }
 
@@ -967,7 +976,7 @@ enum class DotEdgeStyle {
     BOLD,
     TAPERED;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }
 
 enum class DotNodeStyle {
@@ -982,7 +991,7 @@ enum class DotNodeStyle {
     DIAGONALS,
     ROUNDED;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }
 
 class DotRect(
@@ -999,7 +1008,7 @@ enum class DotClusterMode {
     GLOBAL,
     NONE;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }
 
 enum class DotOutputMode {
@@ -1007,7 +1016,7 @@ enum class DotOutputMode {
     NODESFIRST,
     EDGESFIRST;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }
 
 enum class DotPageDir {
@@ -1026,7 +1035,7 @@ enum class DotQuadType {
     FAST,
     NONE;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }
 
 enum class DotRankDir {
@@ -1045,7 +1054,7 @@ enum class DotSmoothType {
     SPRING,
     TRIANGLE;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }
 
 enum class DotNodeShape {
@@ -1109,7 +1118,7 @@ enum class DotNodeShape {
     LARROW,
     LPROMOTER;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }
 
 enum class DotSubgraphStyle {
@@ -1117,5 +1126,5 @@ enum class DotSubgraphStyle {
     STRIPED,
     ROUNDED;
 
-    override fun toString(): String = super.toString().toLowerCase()
+    override fun toString(): String = super.toString().lowercase()
 }

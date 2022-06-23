@@ -1,0 +1,75 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.10'
+    id 'application'
+    id 'maven-publish'
+}
+
+group = 'io.github.rchowell'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5:1.7.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = '1.8'
+}
+
+compileTestKotlin {
+    kotlinOptions.jvmTarget = '1.8'
+}
+
+// Run the example with `./gradlew run --console plain`
+application {
+    mainClassName = 'io.github.rchowell.dotlin.example.ExampleKt'
+}
+
+publishing {
+
+    publications {
+        dotlin(MavenPublication) {
+            from components.java
+            pom {
+                name = 'Dotlin'
+                description = 'Kotlin DSL for Graphviz Dot'
+                url = 'http://www.github.com/rchowell/Dotlin'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'rchowell'
+                        name = 'Robert Howell'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git://github.com/RCHowell/Dotlin.git'
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            name = "OSSRH"
+            url = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            credentials {
+                username = project.ossrhUsername
+                password = project.ossrhPassword
+            }
+        }
+    }
+}

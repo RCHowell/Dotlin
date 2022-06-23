@@ -1,3 +1,11 @@
+package io.github.rchowell.dotlin.example
+
+import io.github.rchowell.dotlin.DotEdgeStyle
+import io.github.rchowell.dotlin.DotNodeShape
+import io.github.rchowell.dotlin.DotPortPos
+import io.github.rchowell.dotlin.DotSubgraphStyle
+import io.github.rchowell.dotlin.digraph
+
 fun main() {
 
     val g1 = digraph {
@@ -102,20 +110,16 @@ fun main() {
         }
     }
 
-    val g4 = graph {
-        "a" - "b"
-        "a" - "c"
-        "a" - "d"
-        "b" - "a"
-        "b" - "d"
-        "c" - "a"
-        "c" - "d"
+    val myGraph = digraph {
+        for (i in 0..100) {
+            +"$i"
+        }
     }
 
-    //    println(g1.dot())
-    //    print("\n\n\n")
-    //    println(g2.dot())
-    //    print("\n\n\n")
-    //    println(g3.dot())
-    println(g4.dot())
+    println(g1.dot())
+    print("\n\n\n")
+    println(g2.dot())
+    print("\n\n\n")
+    println(g3.dot())
+    println(myGraph.dot())
 }
