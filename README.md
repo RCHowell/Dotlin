@@ -1,5 +1,15 @@
 # Dotlin - Kotlin Graphviz Dot DSL
 
+```groovy
+// build.gradle
+implementation 'io.github.rchowell:dotlin:1.0.0'
+```
+
+```kotlin
+// build.gradle.kts
+implementation("io.github.rchowell:dotlin:1.0.0")
+```
+
 ## About
 
 This library is a Kotlin DSL for the Graphviz Dot language. Its syntax is fairly similar to standard Dot, with some
