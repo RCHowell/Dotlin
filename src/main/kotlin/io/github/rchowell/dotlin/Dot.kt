@@ -702,6 +702,8 @@ class DotNodeAttrStmt(override val standalone: Boolean = false) : DotAttrStmt() 
 
     var imagescaleS: String? by attr("imagescale")
 
+    var label: String? by attr()
+
     var labelloc: String? by attr()
 
     var layer: String? by attr()
@@ -1116,7 +1118,9 @@ enum class DotNodeShape {
     RPROMOTER,
     RARROW,
     LARROW,
-    LPROMOTER;
+    LPROMOTER,
+    RECORD,
+    MRECORD;
 
     override fun toString(): String = super.toString().lowercase()
 }
