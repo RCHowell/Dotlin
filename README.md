@@ -2,12 +2,12 @@
 
 ```groovy
 // build.gradle
-implementation 'io.github.rchowell:dotlin:1.0.1'
+implementation 'io.github.rchowell:dotlin:1.0.2'
 ```
 
 ```kotlin
 // build.gradle.kts
-implementation("io.github.rchowell:dotlin:1.0.1")
+implementation("io.github.rchowell:dotlin:1.0.2")
 ```
 
 > The library is just one file, `Dot.kt` — so you could just copy that file à la picocli.
