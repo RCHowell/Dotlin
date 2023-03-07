@@ -947,6 +947,8 @@ enum class DotArrowType {
 
 enum class DotDirType {
     FORWARD,
+    BACK,
+    BOTH,
     NONE;
 
     override fun toString(): String = super.toString().lowercase()
